@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/header";
 import { ClerkProvider } from '@clerk/nextjs';
 import Registry from "@/lib/registry";
+import { dark } from "@clerk/themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,11 @@ export default function RootLayout({
 }>) {
   return (
     <Registry>  
-    <ClerkProvider> 
+    <ClerkProvider
+      appearance={{
+        theme: dark,
+      }}
+    >
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.className}`}

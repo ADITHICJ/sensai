@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.35.1",
+    "@clerk/themes": "^2.4.36",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -22,6 +23,9 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "debug": "^4.4.3",
+    "ingest": "^1.0.0",
+    "inngest": "^3.45.1",
     "lucide-react": "^0.553.0",
     "next": "16.0.3",
     "next-themes": "^0.4.6",
@@ -32,7 +36,8 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^20.19.25",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
