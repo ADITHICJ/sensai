@@ -11,6 +11,7 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
 import {
+  Check,
   ChevronDownIcon,
   FileText,
   GraduationCap,
@@ -26,8 +27,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { checkUser } from "@/lib/checkUser";
 
-const Header = () => {
+const Header = async() => {
+  await checkUser();
+  
   return (
     <div>
       <header className="fixed top-0 w-full border-b bg-background/80 backdrop-blur-md z-50 supports-backdrop-filter:bg-background/60">
