@@ -1,12 +1,13 @@
-import React from 'react'
+import React from "react";
 
-type Props = { params: { id: string } }
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
 const CoverLetter = async ({ params }: Props) => {
-    const id = params.id;
-  return (
-    <div>CoverLetter: {id}</div>
-  )
-}
+  const { id } = await params; // ✅ required in Next.js 16
 
-export default CoverLetter
+  return <div>CoverLetter: {id}</div>;
+};
+
+export default CoverLetter;
