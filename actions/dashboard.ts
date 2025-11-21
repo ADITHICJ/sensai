@@ -4,14 +4,13 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const geminiApiKey = process.env.GEMINI_API_KEY;
-if (!geminiApiKey) {
-  throw new Error("Missing required environment variable: GEMINI_API_KEY");
-}
-const genAI = new GoogleGenerativeAI(geminiApiKey);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const apiKey = process.env.GEMINI_API_KEY;
+if (!apiKey) throw new Error("GEMINI_API_KEY environment variable is required");
 
-export const generateAIInsights = async (industry: string | null) => {
+const genAI = new GoogleGenerativeAI(apiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+export const generateAIInsights = async (industry: string) => {
   const prompt = `
           Analyze the current state of the ${industry} industry and provide insights in ONLY the following JSON format without any additional notes or explanations:
           {
@@ -55,6 +54,8 @@ export async function getIndustryInsights() {
 
   // If no insights exist, generate them
   if (!user.industryInsight) {
+    if (!user.industry) throw new Error("User has no industry");
+
     const insights = await generateAIInsights(user.industry);
 
     const industryInsight = await db.industryInsight.create({

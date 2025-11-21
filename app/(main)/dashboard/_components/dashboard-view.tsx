@@ -101,8 +101,8 @@ const DashboardView: React.FC<{ insights: Insights }> = ({ insights }) => {
 
       {/* Market Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="gap-1 py-4">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
             <CardTitle className="text-sm font-medium">
               Market Outlook
             </CardTitle>
@@ -116,7 +116,7 @@ const DashboardView: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="gap-1 py-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Industry Growth
@@ -131,7 +131,7 @@ const DashboardView: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="gap-1 py-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Demand Level</CardTitle>
             <BriefcaseIcon className="h-4 w-4 text-muted-foreground" />
@@ -146,15 +146,19 @@ const DashboardView: React.FC<{ insights: Insights }> = ({ insights }) => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="gap-2 py-4">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Top Skills</CardTitle>
             <Brain className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1">
+          <CardContent className="overflow-hidden">
+            <div className="flex flex-wrap gap-2">
               {insights.topSkills.map((skill) => (
-                <Badge key={skill} variant="secondary">
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  title={skill} // Shows full text on hover
+                >
                   {skill}
                 </Badge>
               ))}
@@ -178,7 +182,7 @@ const DashboardView: React.FC<{ insights: Insights }> = ({ insights }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <Tooltip
-                  content={(props: TooltipProps) => {
+                  content={(props: TooltipProps<any, any>) => {
                     const { active, payload, label } = props as any;
                     if (active && payload && payload.length) {
                       return (

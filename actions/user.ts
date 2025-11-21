@@ -5,7 +5,12 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { generateAIInsights } from "./dashboard";
 
-export async function updateUser(data: { industry: any; experience: any; bio: any; skills: any; }) {
+export async function updateUser(data: {
+  industry: string;
+  experience: any;
+  bio: any;
+  skills: any;
+}) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
@@ -16,54 +21,55 @@ export async function updateUser(data: { industry: any; experience: any; bio: an
   if (!user) throw new Error("User not found");
 
   try {
-    // Start a transaction to handle both operations
-    const result = await db.$transaction(
-      async (tx) => {
-        // First check if industry exists
-        let industryInsight = await tx.industryInsight.findUnique({
-          where: {
-            industry: data.industry,
-          },
-        });
+    // ❗ Move Gemini API call OUTSIDE the transaction
+    let insights = null;
 
-        // If industry doesn't exist, create it with default values
-        if (!industryInsight) {
-          const insights = await generateAIInsights(data.industry);
+    const existingInsight = await db.industryInsight.findUnique({
+      where: { industry: data.industry },
+    });
 
-          industryInsight = await db.industryInsight.create({
-            data: {
-              industry: data.industry,
-              ...insights,
-              nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            },
-          });
-        }
+    if (!existingInsight) {
+      insights = await generateAIInsights(data.industry);
+    }
 
-        // Now update the user
-        const updatedUser = await tx.user.update({
-          where: {
-            id: user.id,
-          },
+    const result = await db.$transaction(async (tx) => {
+      let industryInsight = existingInsight;
+
+      // Create only if not exists
+      if (!industryInsight) {
+        industryInsight = await tx.industryInsight.create({
           data: {
             industry: data.industry,
-            experience: data.experience,
-            bio: data.bio,
-            skills: data.skills,
+            ...insights,
+            nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           },
         });
-
-        return { updatedUser, industryInsight };
-      },
-      {
-        timeout: 10000, // default: 5000
       }
-    );
+
+      const updatedUser = await tx.user.update({
+        where: { id: user.id },
+        data: {
+          industry: data.industry,
+          experience: data.experience,
+          bio: data.bio,
+          skills: data.skills,
+        },
+      });
+
+      return { updatedUser, industryInsight };
+    });
+
     revalidatePath("/");
     return result.updatedUser;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Error updating user and industry:", message);
-    throw new Error("Failed to update profile");
+  } catch (error: any) {
+    console.error("🔥 UPDATE USER ERROR:", {
+      message: error.message,
+      code: error.code,
+      meta: error.meta,
+      stack: error.stack,
+    });
+
+    throw new Error(error.message || "Unknown error");
   }
 }
 
@@ -91,8 +97,7 @@ export async function getUserOnboardingStatus() {
       isOnboarded: !!user?.industry,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Error checking onboarding status:", message);
+    console.error("Error checking onboarding status:", error);
     throw new Error("Failed to check onboarding status");
   }
 }

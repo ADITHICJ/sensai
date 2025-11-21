@@ -1,5 +1,6 @@
 {
     "prisma-smart-formatter.typescript.defaultFormatter": "esbenp.prettier-vscode",
     "prisma-smart-formatter.typescriptreact.defaultFormatter": "esbenp.prettier-vscode",
-    "WillLuke.nextjs.hasPrompted": true
+    "WillLuke.nextjs.hasPrompted": true,
+    "prisma.pinToPrisma6": true
 }
